@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Container, Form, Button } from "react-bootstrap";
 import "../styles/Login.css";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import API_URL from "../config/global";
 
 const Login = () => {
 
@@ -15,9 +17,21 @@ const Login = () => {
         setFormData({ ...formData, [name]:value });
   };
 
-  const handleSubmit=(e)=>{
+  const navigate = useNavigate();
+
+  const handleSubmit= async (e)=>{
     e.preventDefault()
-            console.log(formData)
+    const response = await axios.post(`${API_URL}/login`, formData);
+    // console.log(response)
+
+    if(response.data === "Invalid User_name or Password"){
+        alert("Invalid User_name or Password 😧")
+    }else if(response.data === "Server Busy"){
+      alert("Verify your email-id 🤨")
+    }else if(response?.status){
+      localStorage.setItem("userInfo", JSON.stringify(response.data));
+      navigate("/home")
+    }
   }
 
   return (
